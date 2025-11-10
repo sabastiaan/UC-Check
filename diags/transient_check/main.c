@@ -201,6 +201,13 @@ char *nop_jmp_block = "\x0f\x1f\x40\x00"    // 4-byte nop
                       "\x0f\x1f\x40\x00"    // 4-byte nop
                       "\x0f\x1f\x40\x00"    // 4-byte nop
                       "\x90\x90\xeb\x30";   // nop / nop / JMP next chunk
+
+char *invalid_jmp_block =   "\xff\xff\xff\xff"    // 4-byte nop
+                            "\xff\fff\xff\xff"    // 4-byte nop
+                            "\xff\xff\xff\xff"    // 4-byte nop
+                            "\xff\xff\xff\x30";   // nop / nop / JMP next chunk
+
+
 char *nop_ret_block = "\x0f\x1f\x40\x00"    // 4-byte nop
                       "\x0f\x1f\x40\x00"    // 4-byte nop
                       "\x0f\x1f\x40\x00"    // 4-byte nop
@@ -211,6 +218,15 @@ void init_code_block(char *codechk) {
     memcpy(codechk + 64, nop_jmp_block, NOP_JMPRET_BLOCK_SIZE);
     memcpy(codechk + (64 * 2), nop_jmp_block, NOP_JMPRET_BLOCK_SIZE);
     memcpy(codechk + (64 * 3), nop_ret_block, NOP_JMPRET_BLOCK_SIZE);
+}
+
+
+
+void init_code_block_invalid(char *codechk) {
+    memcpy(codechk, nop_jmp_block, invalid_jmp_block);
+    memcpy(codechk + 64, nop_jmp_block, invalid_jmp_block);
+    memcpy(codechk + (64 * 2), nop_jmp_block, invalid_jmp_block);
+    memcpy(codechk + (64 * 3), nop_ret_block, invalid_jmp_block);
 }
 
 int main(int argc, const char **argv) {
@@ -226,7 +242,7 @@ int main(int argc, const char **argv) {
     memset(code_block, '\x90', CB_TOTAL_SIZE);
     init_code_block(&code_block[CB_NORMAL_START]);
     init_code_block(&code_block[CB_DUMMY_START]);
-    init_code_block(&code_block[CB_TRANSIENT_START]);
+    init_code_block_invalid(&code_block[CB_TRANSIENT_START]);
     init_code_block(&code_block[CB_NEVER_START]);
 
 	//////////////////////////////
